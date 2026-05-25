@@ -66,6 +66,7 @@
 | 变更影响报告 | 代码提交 → 自动生成受影响方法/接口清单 |
 | 实时 JDBC Agent | 运行时 SQL 捕获（`SqlCaptureService` 已预留接口） |
 | 交互式查询助手 (B) | 自然语言查询血缘关系 |
+| HugeGraph 适配 | 切换到 HugeGraph 图数据库（`HugeGraphAdapter` 已预留接口，当前默认 Neo4j） |
 
 ## 4. 技术架构
 
