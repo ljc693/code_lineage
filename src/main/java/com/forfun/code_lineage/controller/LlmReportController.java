@@ -38,6 +38,7 @@ public class LlmReportController {
         String columnName = (String) body.get("columnName");
         int days = body.containsKey("days") ? ((Number) body.get("days")).intValue() : 90;
         boolean includeFindings = Boolean.TRUE.equals(body.get("includeFindings"));
+        String appId = (String) body.getOrDefault("appId", "");
 
         // Map URL-friendly type to template name
         Map<String, String> typeToTemplate = Map.of(
@@ -50,7 +51,7 @@ public class LlmReportController {
         // Build findings summary from analysis engine results
         String findingsSummary = "";
         if (includeFindings) {
-            var findings = findingsRepo.findByAppId("clawer", 50);
+            var findings = findingsRepo.findByAppId(appId, 50);
             findingsSummary = findings.stream()
                     .filter(f -> f.get("title") != null)
                     .map(f -> "- [" + f.get("severity") + "] [" + f.get("rule_id") + "] " + f.get("title"))
@@ -60,9 +61,9 @@ public class LlmReportController {
 
         LineageContext context;
         if (templateName.contains("dead_column")) {
-            context = contextBuilder.buildDeadColumnContext(tableName, columnName, days, false);
+            context = contextBuilder.buildDeadColumnContext(tableName, columnName, days, false, appId);
         } else {
-            context = contextBuilder.buildFieldImpactContext(tableName, columnName, false);
+            context = contextBuilder.buildFieldImpactContext(tableName, columnName, false, appId);
         }
 
         // Inject findings summary into context if available

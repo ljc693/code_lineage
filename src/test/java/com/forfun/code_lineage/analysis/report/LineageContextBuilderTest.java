@@ -66,7 +66,7 @@ class LineageContextBuilderTest {
         when(neo4jResult.hasNext()).thenReturn(true, false);
         when(neo4jResult.next()).thenReturn(rec);
 
-        LineageContext ctx = builder.buildDeadColumnContext("crawler_task", "errorMessage", 180, false);
+        LineageContext ctx = builder.buildDeadColumnContext("crawler_task", "errorMessage", 180, false, "clawer");
 
         assertThat(ctx.queryDescription()).contains("Dead column analysis");
         assertThat(ctx.targetTable()).isEqualTo("crawler_task");
@@ -99,7 +99,7 @@ class LineageContextBuilderTest {
         when(session.run(anyString(), any(Map.class))).thenReturn(emptyResult);
         when(emptyResult.hasNext()).thenReturn(false);
 
-        LineageContext ctx = builder.buildDeadColumnContext("t", "c", 30, false);
+        LineageContext ctx = builder.buildDeadColumnContext("t", "c", 30, false, "");
 
         assertThat(ctx.upstreamEndpoints()).isEmpty();
         assertThat(ctx.deadColumnAnalysis()).containsEntry("days", 30);

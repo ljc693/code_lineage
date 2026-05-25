@@ -23,7 +23,7 @@ public class LineageContextBuilder {
     }
 
     public LineageContext buildDeadColumnContext(String tableName, String columnName, int days,
-                                                  boolean includeFindings) {
+                                                  boolean includeFindings, String appId) {
         var methods = columnRepo.findImpactedMethods(tableName, columnName);
         var columns = columnRepo.findColumnsByTable(tableName);
         var builder = LineageContext.builder()
@@ -36,14 +36,14 @@ public class LineageContextBuilder {
                 .deadColumnAnalysis(Map.of("days", days));
 
         if (includeFindings) {
-            builder.findingsSummary(buildFindingsSummary(tableName));
+            builder.findingsSummary(buildFindingsSummary(tableName, appId));
         }
 
         return builder.build();
     }
 
     public LineageContext buildFieldImpactContext(String tableName, String columnName,
-                                                   boolean includeFindings) {
+                                                   boolean includeFindings, String appId) {
         var methods = columnRepo.findImpactedMethods(tableName, columnName);
         var columns = columnRepo.findColumnsByTable(tableName);
         var builder = LineageContext.builder()
@@ -55,14 +55,14 @@ public class LineageContextBuilder {
                 .callChainExample("N/A");
 
         if (includeFindings) {
-            builder.findingsSummary(buildFindingsSummary(tableName));
+            builder.findingsSummary(buildFindingsSummary(tableName, appId));
         }
 
         return builder.build();
     }
 
-    private String buildFindingsSummary(String tableName) {
-        var findings = findingsRepo.findByAppId("clawer", 50);
+    private String buildFindingsSummary(String tableName, String appId) {
+        var findings = findingsRepo.findByAppId(appId, 50);
         return findings.stream()
                 .filter(f -> f.get("title") != null)
                 .map(f -> "- [" + f.get("severity") + "] [" + f.get("rule_id") + "] " + f.get("title"))

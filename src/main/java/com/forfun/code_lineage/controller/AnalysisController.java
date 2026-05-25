@@ -137,7 +137,7 @@ public class AnalysisController {
         try (var session = neo4jDriver.session()) {
             for (var m : directMethods) {
                 String methodId = (String) m.get("method_id");
-                String appId = (String) m.getOrDefault("app_id", "clawer");
+                String appId = (String) m.getOrDefault("app_id", "");
                 if (methodId == null) continue;
 
                 // Walk upstream CALLS chain (1..6 hops) to find entry points.
@@ -183,9 +183,10 @@ public class AnalysisController {
     }
 
     /** Seed demo data for field impact visualization */
+    @Deprecated
     @PostMapping("/seed-demo")
     public LineageResponse seedDemoData() {
-        // Use real method IDs from the clawer project (loaded in Neo4j)
+        // Example data — replace with your own project's scan data in production
         String[][] demo = {
             {"clawer", "clawer:com.clawer.application.service.impl.AuthApplicationServiceImpl.listPlatforms(PlatformQuery)", "listPlatforms(PlatformQuery)", "AuthApplicationServiceImpl", "platform_config", "platform_code", "SELECT", "MYSQL"},
             {"clawer", "clawer:com.clawer.application.service.impl.AuthApplicationServiceImpl.listPlatforms(PlatformQuery)", "listPlatforms(PlatformQuery)", "AuthApplicationServiceImpl", "platform_config", "auth_type", "SELECT", "MYSQL"},
