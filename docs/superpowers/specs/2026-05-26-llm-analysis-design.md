@@ -73,7 +73,7 @@ Concrete Rules (@Component, auto-discovered)
 ### 2.2 Core Interfaces
 
 ```java
-package com.forfun.codel_ineage.analysis.rule;
+package com.forfun.code_lineage.analysis.rule;
 
 // ── strategy ──────────────────────────────────────────────────
 public interface AnalysisRule {
@@ -388,7 +388,7 @@ A subsystem (LLM):
 
 ```
 New files (C subsystem — pure algorithm):
-  src/main/java/com/forfun/codel_ineage/analysis/
+  src/main/java/com/forfun/code_lineage/analysis/
     └── rule/
         ├── AnalysisRule.java
         ├── AbstractAnalysisRule.java
@@ -402,7 +402,7 @@ New files (C subsystem — pure algorithm):
         └── LayerViolationDetector.java
 
 New files (A subsystem — LLM integration):
-  src/main/java/com/forfun/codel_ineage/llm/
+  src/main/java/com/forfun/code_lineage/llm/
     ├── LineageContext.java
     ├── LineageContextBuilder.java
     ├── PromptTemplate.java
@@ -410,7 +410,7 @@ New files (A subsystem — LLM integration):
     └── LlmReportRepository.java             ← MySQL persistence
 
 Controllers:
-  src/main/java/com/forfun/codel_ineage/controller/
+  src/main/java/com/forfun/code_lineage/controller/
     ├── AnalysisRuleController.java           ← /api/v1/analysis/*
     └── LlmReportController.java              ← /api/v1/llm/*
 ```

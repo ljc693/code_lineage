@@ -1,5 +1,11 @@
 # 发现与决策
 
+## 当前状态 (2026-05-26)
+
+**已交付：** 代码分析引擎 (AST+ASM)、Neo4j 图存储、MySQL 列级血缘、G6 可视化、MyBatis-Plus 解析、5 个分析检测器、LLM 报告基础设施、性能优化（测试 <3s、批量 UNWIND）、CI/CD 进度 API。
+
+**包结构：** `com.forfun.code_lineage` | **项目名：** `code-lineage` | **数据库：** `lineage`
+
 ## 需求
 - V1 核心：应用内方法级调用链还原 (HTTP/RPC 入口 → DB 操作)，路径完整性 ≥85%
 - 5 个试点 Java 项目，需覆盖各类型技术栈
@@ -8,7 +14,7 @@
 - 为后续跨应用/跨系统链路拼接预留字段
 
 ## 研究发现
-- 项目当前是空 Spring Boot 3.5 / Java 21 / Gradle 初始化项目，无任何业务代码
+- Neo4j Spring Data 支持 `@Node` 和 `@RelationshipProperties` 注解，适合图建模
 - Neo4j Spring Data 支持 `@Node` 和 `@RelationshipProperties` 注解，适合图建模
 - JavaParser 3.26.3 支持 Java 21 语法
 - ASM 9.7.1 支持 Java 21 字节码

@@ -15,15 +15,15 @@
 ### Task 1: Finding value object + AnalysisFindingsRepository
 
 **Files:**
-- Create: `src/main/java/com/forfun/codel_ineage/analysis/rule/Finding.java`
-- Create: `src/main/java/com/forfun/codel_ineage/analysis/rule/AnalysisFindingsRepository.java`
+- Create: `src/main/java/com/forfun/code_lineage/analysis/rule/Finding.java`
+- Create: `src/main/java/com/forfun/code_lineage/analysis/rule/AnalysisFindingsRepository.java`
 
 - [ ] **Step 1: Write failing test for Finding**
 
-Create `src/test/java/com/forfun/codel_ineage/analysis/rule/FindingTest.java`:
+Create `src/test/java/com/forfun/code_lineage/analysis/rule/FindingTest.java`:
 
 ```java
-package com.forfun.codel_ineage.analysis.rule;
+package com.forfun.code_lineage.analysis.rule;
 
 import org.junit.jupiter.api.Test;
 import java.util.Map;
@@ -57,7 +57,7 @@ Run: `./gradlew test --tests "*FindingTest"` — FAIL.
 `Finding.java`:
 
 ```java
-package com.forfun.codel_ineage.analysis.rule;
+package com.forfun.code_lineage.analysis.rule;
 
 import java.util.Map;
 
@@ -75,7 +75,7 @@ public record Finding(
 `AnalysisFindingsRepository.java`:
 
 ```java
-package com.forfun.codel_ineage.analysis.rule;
+package com.forfun.code_lineage.analysis.rule;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -144,9 +144,9 @@ Run: `./gradlew test --tests "*FindingTest"` — PASS. `./gradlew test` — PASS
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/java/com/forfun/codel_ineage/analysis/rule/Finding.java \
-        src/main/java/com/forfun/codel_ineage/analysis/rule/AnalysisFindingsRepository.java \
-        src/test/java/com/forfun/codel_ineage/analysis/rule/FindingTest.java
+git add src/main/java/com/forfun/code_lineage/analysis/rule/Finding.java \
+        src/main/java/com/forfun/code_lineage/analysis/rule/AnalysisFindingsRepository.java \
+        src/test/java/com/forfun/code_lineage/analysis/rule/FindingTest.java
 git commit -m "feat: add Finding value object + AnalysisFindingsRepository with MySQL persistence"
 ```
 
@@ -155,15 +155,15 @@ git commit -m "feat: add Finding value object + AnalysisFindingsRepository with 
 ### Task 2: AnalysisRule interface + AbstractAnalysisRule template base
 
 **Files:**
-- Create: `src/main/java/com/forfun/codel_ineage/analysis/rule/AnalysisRule.java`
-- Create: `src/main/java/com/forfun/codel_ineage/analysis/rule/AbstractAnalysisRule.java`
+- Create: `src/main/java/com/forfun/code_lineage/analysis/rule/AnalysisRule.java`
+- Create: `src/main/java/com/forfun/code_lineage/analysis/rule/AbstractAnalysisRule.java`
 
 - [ ] **Step 1: Write failing test**
 
-Create `src/test/java/com/forfun/codel_ineage/analysis/rule/AbstractAnalysisRuleTest.java`:
+Create `src/test/java/com/forfun/code_lineage/analysis/rule/AbstractAnalysisRuleTest.java`:
 
 ```java
-package com.forfun.codel_ineage.analysis.rule;
+package com.forfun.code_lineage.analysis.rule;
 
 import org.junit.jupiter.api.Test;
 import org.neo4j.driver.*;
@@ -220,7 +220,7 @@ Run: `./gradlew test --tests "*AbstractAnalysisRuleTest"` — FAIL.
 `AnalysisRule.java`:
 
 ```java
-package com.forfun.codel_ineage.analysis.rule;
+package com.forfun.code_lineage.analysis.rule;
 
 import java.util.List;
 
@@ -248,7 +248,7 @@ public interface AnalysisRule {
 `AbstractAnalysisRule.java`:
 
 ```java
-package com.forfun.codel_ineage.analysis.rule;
+package com.forfun.code_lineage.analysis.rule;
 
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Session;
@@ -292,9 +292,9 @@ Run: `./gradlew test --tests "*AbstractAnalysisRuleTest"` — PASS. `./gradlew t
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/java/com/forfun/codel_ineage/analysis/rule/AnalysisRule.java \
-        src/main/java/com/forfun/codel_ineage/analysis/rule/AbstractAnalysisRule.java \
-        src/test/java/com/forfun/codel_ineage/analysis/rule/AbstractAnalysisRuleTest.java
+git add src/main/java/com/forfun/code_lineage/analysis/rule/AnalysisRule.java \
+        src/main/java/com/forfun/code_lineage/analysis/rule/AbstractAnalysisRule.java \
+        src/test/java/com/forfun/code_lineage/analysis/rule/AbstractAnalysisRuleTest.java
 git commit -m "feat: add AnalysisRule interface + AbstractAnalysisRule template method base"
 ```
 
@@ -303,14 +303,14 @@ git commit -m "feat: add AnalysisRule interface + AbstractAnalysisRule template 
 ### Task 3: NPlusOneDetector (first concrete rule)
 
 **Files:**
-- Create: `src/main/java/com/forfun/codel_ineage/analysis/rule/NPlusOneDetector.java`
+- Create: `src/main/java/com/forfun/code_lineage/analysis/rule/NPlusOneDetector.java`
 
 - [ ] **Step 1: Write failing test**
 
-Create `src/test/java/com/forfun/codel_ineage/analysis/rule/NPlusOneDetectorTest.java`:
+Create `src/test/java/com/forfun/code_lineage/analysis/rule/NPlusOneDetectorTest.java`:
 
 ```java
-package com.forfun.codel_ineage.analysis.rule;
+package com.forfun.code_lineage.analysis.rule;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -375,7 +375,7 @@ Run: `./gradlew test --tests "*NPlusOneDetectorTest"` — FAIL.
 - [ ] **Step 2: Implement NPlusOneDetector**
 
 ```java
-package com.forfun.codel_ineage.analysis.rule;
+package com.forfun.code_lineage.analysis.rule;
 
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Session;
@@ -428,8 +428,8 @@ Run: `./gradlew test --tests "*NPlusOneDetectorTest"` — PASS.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/java/com/forfun/codel_ineage/analysis/rule/NPlusOneDetector.java \
-        src/test/java/com/forfun/codel_ineage/analysis/rule/NPlusOneDetectorTest.java
+git add src/main/java/com/forfun/code_lineage/analysis/rule/NPlusOneDetector.java \
+        src/test/java/com/forfun/code_lineage/analysis/rule/NPlusOneDetectorTest.java
 git commit -m "feat: add NPlusOneDetector — detects DB calls inside self-calling loops"
 ```
 
@@ -438,15 +438,15 @@ git commit -m "feat: add NPlusOneDetector — detects DB calls inside self-calli
 ### Task 4: AnalysisEngine + AnalysisRuleController
 
 **Files:**
-- Create: `src/main/java/com/forfun/codel_ineage/analysis/rule/AnalysisEngine.java`
-- Create: `src/main/java/com/forfun/codel_ineage/controller/AnalysisRuleController.java`
+- Create: `src/main/java/com/forfun/code_lineage/analysis/rule/AnalysisEngine.java`
+- Create: `src/main/java/com/forfun/code_lineage/controller/AnalysisRuleController.java`
 
 - [ ] **Step 1: Write failing test for AnalysisEngine**
 
-Create `src/test/java/com/forfun/codel_ineage/analysis/rule/AnalysisEngineTest.java`:
+Create `src/test/java/com/forfun/code_lineage/analysis/rule/AnalysisEngineTest.java`:
 
 ```java
-package com.forfun.codel_ineage.analysis.rule;
+package com.forfun.code_lineage.analysis.rule;
 
 import org.junit.jupiter.api.Test;
 import java.util.*;
@@ -508,7 +508,7 @@ Run: `./gradlew test --tests "*AnalysisEngineTest"` — FAIL.
 `AnalysisEngine.java`:
 
 ```java
-package com.forfun.codel_ineage.analysis.rule;
+package com.forfun.code_lineage.analysis.rule;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
@@ -560,12 +560,12 @@ public class AnalysisEngine {
 `AnalysisRuleController.java`:
 
 ```java
-package com.forfun.codel_ineage.controller;
+package com.forfun.code_lineage.controller;
 
-import com.forfun.codel_ineage.analysis.rule.AnalysisEngine;
-import com.forfun.codel_ineage.analysis.rule.AnalysisFindingsRepository;
-import com.forfun.codel_ineage.analysis.rule.AnalysisRule;
-import com.forfun.codel_ineage.controller.dto.LineageResponse;
+import com.forfun.code_lineage.analysis.rule.AnalysisEngine;
+import com.forfun.code_lineage.analysis.rule.AnalysisFindingsRepository;
+import com.forfun.code_lineage.analysis.rule.AnalysisRule;
+import com.forfun.code_lineage.controller.dto.LineageResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -627,9 +627,9 @@ Run: `./gradlew test --tests "*AnalysisEngineTest"` — PASS. `./gradlew test` �
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/java/com/forfun/codel_ineage/analysis/rule/AnalysisEngine.java \
-        src/main/java/com/forfun/codel_ineage/controller/AnalysisRuleController.java \
-        src/test/java/com/forfun/codel_ineage/analysis/rule/AnalysisEngineTest.java
+git add src/main/java/com/forfun/code_lineage/analysis/rule/AnalysisEngine.java \
+        src/main/java/com/forfun/code_lineage/controller/AnalysisRuleController.java \
+        src/test/java/com/forfun/code_lineage/analysis/rule/AnalysisEngineTest.java
 git commit -m "feat: add AnalysisEngine orchestrator + AnalysisRuleController REST API"
 ```
 
@@ -640,12 +640,12 @@ git commit -m "feat: add AnalysisEngine orchestrator + AnalysisRuleController RE
 ### Task 5: GodMethodDetector + LayerViolationDetector
 
 **Files:**
-- Create: `src/main/java/com/forfun/codel_ineage/analysis/rule/GodMethodDetector.java`
-- Create: `src/main/java/com/forfun/codel_ineage/analysis/rule/LayerViolationDetector.java`
+- Create: `src/main/java/com/forfun/code_lineage/analysis/rule/GodMethodDetector.java`
+- Create: `src/main/java/com/forfun/code_lineage/analysis/rule/LayerViolationDetector.java`
 
 - [ ] **Step 1: Write tests for both detectors**
 
-Create `src/test/java/com/forfun/codel_ineage/analysis/rule/GodMethodDetectorTest.java` and `LayerViolationDetectorTest.java`. Both follow the same mock pattern as NPlusOneDetectorTest.
+Create `src/test/java/com/forfun/code_lineage/analysis/rule/GodMethodDetectorTest.java` and `LayerViolationDetectorTest.java`. Both follow the same mock pattern as NPlusOneDetectorTest.
 
 GodMethodDetector test: mock session returning methods with >5 ACCESSES edges → verify findings produced with severity HIGH.
 
@@ -658,7 +658,7 @@ Run: `./gradlew test --tests "*GodMethodDetectorTest" --tests "*LayerViolationDe
 `GodMethodDetector.java`:
 
 ```java
-package com.forfun.codel_ineage.analysis.rule;
+package com.forfun.code_lineage.analysis.rule;
 
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Session;
@@ -705,7 +705,7 @@ public class GodMethodDetector extends AbstractAnalysisRule {
 `LayerViolationDetector.java`:
 
 ```java
-package com.forfun.codel_ineage.analysis.rule;
+package com.forfun.code_lineage.analysis.rule;
 
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Session;
@@ -753,9 +753,9 @@ public class LayerViolationDetector extends AbstractAnalysisRule {
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/java/com/forfun/codel_ineage/analysis/rule/GodMethodDetector.java \
-        src/main/java/com/forfun/codel_ineage/analysis/rule/LayerViolationDetector.java \
-        src/test/java/com/forfun/codel_ineage/analysis/rule/
+git add src/main/java/com/forfun/code_lineage/analysis/rule/GodMethodDetector.java \
+        src/main/java/com/forfun/code_lineage/analysis/rule/LayerViolationDetector.java \
+        src/test/java/com/forfun/code_lineage/analysis/rule/
 git commit -m "feat: add GodMethodDetector + LayerViolationDetector"
 ```
 
@@ -764,8 +764,8 @@ git commit -m "feat: add GodMethodDetector + LayerViolationDetector"
 ### Task 6: CircularDependencyDetector + OrphanCodeDetector
 
 **Files:**
-- Create: `src/main/java/com/forfun/codel_ineage/analysis/rule/CircularDependencyDetector.java`
-- Create: `src/main/java/com/forfun/codel_ineage/analysis/rule/OrphanCodeDetector.java`
+- Create: `src/main/java/com/forfun/code_lineage/analysis/rule/CircularDependencyDetector.java`
+- Create: `src/main/java/com/forfun/code_lineage/analysis/rule/OrphanCodeDetector.java`
 
 - [ ] **Step 1: Write tests** — same mock pattern as previous detectors.
 
@@ -777,7 +777,7 @@ OrphanCodeDetector: Cypher finds methods with 0 CALLS in-degree AND isEntry=fals
 `CircularDependencyDetector.java`:
 
 ```java
-package com.forfun.codel_ineage.analysis.rule;
+package com.forfun.code_lineage.analysis.rule;
 
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Session;
@@ -823,7 +823,7 @@ public class CircularDependencyDetector extends AbstractAnalysisRule {
 `OrphanCodeDetector.java`:
 
 ```java
-package com.forfun.codel_ineage.analysis.rule;
+package com.forfun.code_lineage.analysis.rule;
 
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Session;
@@ -870,9 +870,9 @@ public class OrphanCodeDetector extends AbstractAnalysisRule {
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/java/com/forfun/codel_ineage/analysis/rule/CircularDependencyDetector.java \
-        src/main/java/com/forfun/codel_ineage/analysis/rule/OrphanCodeDetector.java \
-        src/test/java/com/forfun/codel_ineage/analysis/rule/
+git add src/main/java/com/forfun/code_lineage/analysis/rule/CircularDependencyDetector.java \
+        src/main/java/com/forfun/code_lineage/analysis/rule/OrphanCodeDetector.java \
+        src/test/java/com/forfun/code_lineage/analysis/rule/
 git commit -m "feat: add CircularDependencyDetector + OrphanCodeDetector"
 ```
 
@@ -883,11 +883,11 @@ git commit -m "feat: add CircularDependencyDetector + OrphanCodeDetector"
 ### Task 7: LineageContext + PromptTemplate + AnalysisExporter + LlmReportRepository
 
 **Files:**
-- Create: `src/main/java/com/forfun/codel_ineage/llm/LineageContext.java`
-- Create: `src/main/java/com/forfun/codel_ineage/llm/LineageContextBuilder.java`
-- Create: `src/main/java/com/forfun/codel_ineage/llm/PromptTemplate.java`
-- Create: `src/main/java/com/forfun/codel_ineage/llm/AnalysisExporter.java`
-- Create: `src/main/java/com/forfun/codel_ineage/llm/LlmReportRepository.java`
+- Create: `src/main/java/com/forfun/code_lineage/llm/LineageContext.java`
+- Create: `src/main/java/com/forfun/code_lineage/llm/LineageContextBuilder.java`
+- Create: `src/main/java/com/forfun/code_lineage/llm/PromptTemplate.java`
+- Create: `src/main/java/com/forfun/code_lineage/llm/AnalysisExporter.java`
+- Create: `src/main/java/com/forfun/code_lineage/llm/LlmReportRepository.java`
 
 - [ ] **Step 1: Write tests and implement each component**
 
@@ -901,16 +901,16 @@ Test files:
 
 - [ ] **Step 2: Implement LlmReportController**
 
-Create `src/main/java/com/forfun/codel_ineage/controller/LlmReportController.java` with endpoints from the design doc section 5.
+Create `src/main/java/com/forfun/code_lineage/controller/LlmReportController.java` with endpoints from the design doc section 5.
 
 - [ ] **Step 3: Run all tests** — PASS.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/java/com/forfun/codel_ineage/llm/ \
-        src/main/java/com/forfun/codel_ineage/controller/LlmReportController.java \
-        src/test/java/com/forfun/codel_ineage/llm/
+git add src/main/java/com/forfun/code_lineage/llm/ \
+        src/main/java/com/forfun/code_lineage/controller/LlmReportController.java \
+        src/test/java/com/forfun/code_lineage/llm/
 git commit -m "feat: add LLM report infrastructure — context builder, templates, exporter, controller"
 ```
 
@@ -921,7 +921,7 @@ git commit -m "feat: add LLM report infrastructure — context builder, template
 ### Task 8: includeFindings enrichment
 
 **Files:**
-- Modify: `src/main/java/com/forfun/codel_ineage/llm/LineageContextBuilder.java`
+- Modify: `src/main/java/com/forfun/code_lineage/llm/LineageContextBuilder.java`
 
 - [ ] **Step 1: Add enrichment logic**
 
@@ -949,7 +949,7 @@ public LineageContext buildTableGovernanceContext(String tableName, boolean incl
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/main/java/com/forfun/codel_ineage/llm/LineageContextBuilder.java
+git add src/main/java/com/forfun/code_lineage/llm/LineageContextBuilder.java
 git commit -m "feat: add includeFindings enrichment — bridge C findings into A report prompts"
 ```
 
