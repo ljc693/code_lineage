@@ -17,6 +17,15 @@ docker-compose up -d mysql neo4j
 ./gradlew integrationTest         # integration tests (needs Docker)
 ```
 
+### Docker Dependencies
+
+| Service | Port | Default Credentials |
+|---------|------|-------------------|
+| MySQL 8.0 | 3306 | `root:1234` / database: `clawer` |
+| Neo4j 5.26 | 7687 (Bolt) | `neo4j:password123` |
+
+These credentials are configured in `src/main/resources/application.properties`.
+
 ## Features
 
 - **Code Analysis**: AST (JavaParser) + ASM bytecode extraction for Java methods, call graphs, and SQL access
