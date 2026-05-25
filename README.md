@@ -21,7 +21,7 @@ docker-compose up -d mysql neo4j
 
 | Service | Port | Default Credentials |
 |---------|------|-------------------|
-| MySQL 8.0 | 3306 | `root:1234` / database: `clawer` |
+| MySQL 8.0 | 3306 | `root:1234` / database: `lineage` |
 | Neo4j 5.26 | 7687 (Bolt) | `neo4j:password123` |
 
 These credentials are configured in `src/main/resources/application.properties`.
