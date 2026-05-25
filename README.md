@@ -60,7 +60,7 @@ GET  /api/v1/scans/history?appId=myapp
 ## Project Structure
 
 ```
-src/main/java/com/forfun/codel_ineage/
+src/main/java/com/forfun/code_lineage/
   analyzer/       AST + ASM code analysis
   sql/            MyBatis/MyBatis-Plus/JPA SQL parsing
   graph/          Neo4j adapter + MySQL column lineage
