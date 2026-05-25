@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: clawer
+      MYSQL_DATABASE: crawler
     ports:
       - "3306:3306"
     volumes:
