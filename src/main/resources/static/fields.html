@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字段影响分析</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#f0f2f5; color:#333; }
+.header { background:#1a1a2e; color:#eee; padding:12px 20px; display:flex; align-items:center; gap:16px; }
+.header h1 { font-size:16px; color:#7c83ff; }
+.header a { color:#aaa; text-decoration:none; font-size:13px; }
+.header a:hover { color:#fff; }
+.container { max-width:1400px; margin:16px auto; padding:0 16px; }
+.panels { display:flex; gap:16px; }
+.panel { background:#fff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.08); overflow:hidden; }
+.panel-left { width:280px; flex-shrink:0; }
+.panel-mid { width:320px; flex-shrink:0; }
+.panel-right { flex:1; }
+.panel-header { padding:12px 16px; font-weight:600; font-size:13px; border-bottom:1px solid #f0f0f0; background:#fafafa; display:flex; justify-content:space-between; align-items:center; }
+.panel-header .badge { background:#7c83ff; color:#fff; border-radius:10px; padding:1px 8px; font-size:11px; }
+.list { max-height:500px; overflow-y:auto; }
+.list-item { padding:10px 16px; cursor:pointer; border-bottom:1px solid #f5f5f5; font-size:13px; transition: background .15s; display:flex; justify-content:space-between; align-items:center; }
+.list-item:hover { background:#f0f5ff; }
+.list-item.active { background:#e6f0ff; border-left:3px solid #7c83ff; }
+.list-item .name { font-family:monospace; }
+.list-item .meta { font-size:11px; color:#999; }
+.tag { display:inline-block; padding:1px 6px; border-radius:3px; font-size:10px; margin-left:4px; }
+.tag-select { background:#e6f7ff; color:#1890ff; }
+.tag-insert { background:#f6ffed; color:#52c41a; }
+.tag-update { background:#fff7e6; color:#fa8c16; }
+.tag-delete { background:#fff1f0; color:#f5222d; }
+.tag-dead { background:#f5f5f5; color:#999; }
+.empty { padding:24px; text-align:center; color:#999; font-size:13px; }
+table.impact { width:100%; border-collapse:collapse; font-size:12px; }
+table.impact th { background:#fafafa; padding:8px 12px; text-align:left; font-weight:600; border-bottom:2px solid #f0f0f0; white-space:nowrap; }
+table.impact td { padding:8px 12px; border-bottom:1px solid #f0f0f0; }
+table.impact tr:hover td { background:#fafafa; }
+.method-sig { font-family:monospace; font-size:11px; color:#666; }
+.operation-cell { text-align:center; }
+.filter-bar { padding:8px 16px; border-bottom:1px solid #f0f0f0; }
+.filter-bar input { width:100%; padding:6px 10px; border:1px solid #d9d9d9; border-radius:4px; font-size:12px; }
+.stat-row { display:flex; gap:12px; margin-bottom:16px; }
+.stat-card { background:#fff; border-radius:8px; padding:16px; flex:1; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+.stat-card .num { font-size:28px; font-weight:700; color:#7c83ff; }
+.stat-card .label { font-size:12px; color:#999; margin-top:4px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>字段影响分析</h1>
+  <a href="/">← 血缘图谱</a>
+  <a href="/api/v1/analysis/values" target="_blank" style="color:#52c41a">价值标签</a>
+  <a href="/api/v1/dashboard/summary" target="_blank" style="color:#fa8c16">仪表盘</a>
+  <span style="margin-left:auto;font-size:12px;color:#666" id="dbInfo"></span>
+</div>
+
+<div class="container">
+  <!-- Stats -->
+  <div class="stat-row" id="stats"></div>
+
+  <!-- Filter for dead column check -->
+  <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center">
+    <label style="font-size:12px;color:#666">死列检测阈值:</label>
+    <input type="number" id="deadDays" value="30" min="1" max="365" style="width:60px;padding:4px 8px;border:1px solid #d9d9d9;border-radius:4px;font-size:12px">
+    <span style="font-size:12px;color:#666">天未访问</span>
+    <button onclick="checkDeadColumns()" style="padding:4px 12px;border:1px solid #f5222d;background:#fff;color:#f5222d;border-radius:4px;cursor:pointer;font-size:12px">检测死列</button>
+  </div>
+
+  <div class="panels">
+    <!-- Left: Tables -->
+    <div class="panel panel-left">
+      <div class="panel-header">数据表 <span class="badge" id="tableCount">0</span></div>
+      <div class="filter-bar"><input type="text" id="tableSearch" placeholder="搜索表..." oninput="renderTables()"></div>
+      <div class="list" id="tableList"><div class="empty">加载中...</div></div>
+    </div>
+
+    <!-- Mid: Columns -->
+    <div class="panel panel-mid">
+      <div class="panel-header">表的字段 <span class="badge" id="colCount">0</span></div>
+      <div class="list" id="columnList"><div class="empty">← 选择数据表</div></div>
+    </div>
+
+    <!-- Right: Impacted methods -->
+    <div class="panel panel-right">
+      <div class="panel-header">
+        受影响方法 <span class="badge" id="methodCount">0</span>
+        <span style="font-size:11px">
+          <a href="#" onclick="showDirectMethods([]);return false" style="color:#7c83ff;margin:0 4px">直接</a>|
+          <a href="#" onclick="showUpstreamEndpoints();return false" style="color:#fa8c16;margin:0 4px">端点</a>
+        </span>
+      </div>
+      <div style="max-height:500px;overflow-y:auto">
+        <table class="impact">
+          <thead><tr><th>方法签名</th><th>类名</th><th>路径/操作</th><th>应用</th></tr></thead>
+          <tbody id="methodTable"><tr><td colspan="4" class="empty">← 选择字段</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let allTables = [];
+let currentTable = null;
+let currentColumn = null;
+
+async function init() {
+  try {
+    // Load tables
+    const r = await fetch('/api/v1/analysis/table-stats');
+    const d = await r.json();
+    if (d.success) {
+      allTables = d.data.tables || [];
+      document.getElementById('tableCount').textContent = allTables.length;
+      renderTables();
+      updateStats();
+    }
+  } catch(e) { console.error(e); }
+}
+
+function updateStats() {
+  const totalCols = new Set();
+  const totalMethods = new Set();
+  allTables.forEach(t => {
+    if (t.col_count) totalCols.add(t.table_name);
+    if (t.method_count) totalMethods.add(t.table_name);
+  });
+  document.getElementById('stats').innerHTML = `
+    <div class="stat-card"><div class="num">${allTables.length}</div><div class="label">数据表</div></div>
+    <div class="stat-card"><div class="num">${allTables.reduce((s,t)=>s+(t.col_count||0), 0)}</div><div class="label">字段引用</div></div>
+    <div class="stat-card"><div class="num">${allTables.reduce((s,t)=>s+(t.method_count||0), 0)}</div><div class="label">关联方法</div></div>
+  `;
+}
+
+function renderTables() {
+  const q = (document.getElementById('tableSearch').value||'').toLowerCase();
+  const filtered = allTables.filter(t => t.table_name.toLowerCase().includes(q));
+  const html = filtered.map(t => `
+    <div class="list-item ${currentTable===t.table_name?'active':''}" onclick="selectTable('${t.table_name}')">
+      <span class="name">${t.table_name}</span>
+      <span class="meta">${t.col_count||0}列 ${t.method_count||0}方法</span>
+    </div>
+  `).join('') || '<div class="empty">无匹配</div>';
+  document.getElementById('tableList').innerHTML = html;
+}
+
+async function selectTable(tableName) {
+  currentTable = tableName;
+  currentColumn = null;
+  renderTables();
+  document.getElementById('methodTable').innerHTML = '<tr><td colspan="5" class="empty">← 选择字段</td></tr>';
+  document.getElementById('methodCount').textContent = '0';
+
+  try {
+    const r = await fetch('/api/v1/analysis/columns?tableName=' + tableName);
+    const d = await r.json();
+    const columns = d.data.columns || [];
+    document.getElementById('colCount').textContent = columns.length;
+    document.getElementById('columnList').innerHTML = columns.map(c => `
+      <div class="list-item" onclick="selectColumn('${tableName}','${c}')">
+        <span class="name">${c}</span>
+      </div>
+    `).join('');
+  } catch(e) { console.error(e); }
+}
+
+let lastUpstreamData = null;
+
+async function selectColumn(tableName, columnName) {
+  currentColumn = columnName;
+  selectTable(tableName);
+  document.querySelectorAll('#columnList .list-item').forEach(el => {
+    if (el.textContent.trim() === columnName) el.classList.add('active');
+  });
+
+  // Fetch both direct methods and upstream endpoints
+  try {
+    const [dr, ur] = await Promise.all([
+      fetch('/api/v1/analysis/field-impact?tableName=' + tableName + '&columnName=' + columnName),
+      fetch('/api/v1/analysis/field-impact-upstream?tableName=' + tableName + '&columnName=' + columnName)
+    ]);
+    const dd = await dr.json();
+    const ud = await ur.json();
+    lastUpstreamData = ud.data;
+
+    document.getElementById('methodCount').textContent =
+      (dd.data.impactedMethods||[]).length + ' direct / ' + (ud.data.count||0) + ' endpoints';
+    showDirectMethods(dd.data.impactedMethods||[]);
+  } catch(e) { console.error(e); }
+}
+
+function showDirectMethods(methods) {
+  document.getElementById('methodTable').innerHTML = methods.map(m => `
+    <tr>
+      <td><span class="method-sig">${m.signature||'-'}</span></td>
+      <td>${m.className||'-'}</td>
+      <td>${m.appId||'-'}</td>
+      <td class="operation-cell"><span class="tag tag-${(m.operation||'select').toLowerCase()}">${m.operation||'SELECT'}</span></td>
+      <td>${m.access_count||1}</td>
+    </tr>
+  `).join('') || '<tr><td colspan="5" class="empty">无数据 — POST /api/v1/analysis/seed-demo 填充</td></tr>';
+}
+
+function showUpstreamEndpoints() {
+  if (!lastUpstreamData) return;
+  var eps = lastUpstreamData.impactedEndpoints || [];
+  document.getElementById('methodTable').innerHTML = `
+    <tr><td colspan="4" style="background:#fff7e6;font-size:12px">
+      字段 <b>${lastUpstreamData.table}.${lastUpstreamData.column}</b>
+      直接关联 ${lastUpstreamData.directMethods} 个方法，
+      通过 Neo4j 上游追溯找到 ${eps.length} 个 HTTP 端点
+    </td></tr>
+    ${eps.map(e => `
+    <tr>
+      <td><span class="method-sig">${e.signature||'-'}</span></td>
+      <td>${e.className||'-'}</td>
+      <td><span class="tag tag-select">${e.httpMethod||'?'}</span> ${e.httpPath||''}</td>
+      <td>${e.appId||''}</td>
+    </tr>
+    `).join('')}
+  ` || '<tr><td colspan="4" class="empty">无上游端点 — 种子数据可能不在 Neo4j 中</td></tr>';
+}
+
+async function checkDeadColumns() {
+  if (!currentTable) return alert('先选择数据表');
+  const days = document.getElementById('deadDays').value || 30;
+  try {
+    const r = await fetch('/api/v1/analysis/dead-columns?tableName=' + currentTable + '&days=' + days);
+    const d = await r.json();
+    const dead = d.data.deadColumns || [];
+    if (dead.length === 0) {
+      alert('所有字段均在 ' + days + ' 天内访问过');
+    } else {
+      document.getElementById('columnList').innerHTML = dead.map(c => `
+        <div class="list-item" onclick="selectColumn('${currentTable}','${c.column_name}')">
+          <span class="name">${c.column_name}</span>
+          <span class="tag tag-dead">${c.total_accesses||0}次访问 | 最后:${(c.last_access||'').substring(0,10)}</span>
+        </div>
+      `).join('');
+      document.getElementById('colCount').textContent = dead.length + ' 死列';
+    }
+  } catch(e) { console.error(e); }
+}
+
+init();
+</script>
+</body>
+</html>

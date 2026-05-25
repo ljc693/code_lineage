@@ -34,17 +34,47 @@ dependencies {
     // MyBatis XML parsing
     implementation 'org.mybatis:mybatis:3.5.17'
 
+    // Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    // JDBC for column_lineage (MySQL)
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.neo4j.test:neo4j-harness:5.26.2'
+    testImplementation('org.neo4j.test:neo4j-harness:5.26.2') {
+        exclude group: 'org.neo4j', module: 'neo4j-slf4j-provider'
+    }
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+	maxHeapSize = "4g"
+	filter {
+		excludeTestsMatching "*IT"
+	}
 }
+
+tasks.register('integrationTest', Test) {
+	useJUnitPlatform()
+	maxHeapSize = "4g"
+	group = 'verification'
+	description = 'Runs integration tests (requires MySQL + Neo4j)'
+	shouldRunAfter test
+
+	filter {
+		includeTestsMatching "*IT"
+	}
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
+}
+
+// Only run integration tests during full check
+check.dependsOn integrationTest

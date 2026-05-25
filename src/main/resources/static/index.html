@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>程序血缘分析中心</title>
+<script src="https://unpkg.com/@antv/g6@4/dist/g6.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; display: flex; height: 100vh; }
+.sidebar { width: 320px; background: #1a1a2e; color: #eee; overflow-y: auto; padding: 16px; flex-shrink: 0; }
+.sidebar h2 { font-size: 16px; margin-bottom: 12px; color: #7c83ff; }
+.sidebar select, .sidebar input { width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #333; border-radius: 4px; background: #16213e; color: #eee; font-size: 13px; }
+.app-list { list-style: none; }
+.app-list li { padding: 8px 10px; margin: 4px 0; border-radius: 4px; cursor: pointer; font-size: 13px; background: #16213e; border-left: 3px solid transparent; transition: all 0.2s; }
+.app-list li:hover { background: #0f3460; border-left-color: #7c83ff; }
+.app-list li .method { font-family: monospace; font-size: 11px; color: #aaa; margin-top: 2px; }
+.app-list li .path { color: #52c41a; font-size: 11px; }
+.main { flex: 1; display: flex; flex-direction: column; }
+.toolbar { padding: 8px 16px; background: #f5f5f5; border-bottom: 1px solid #ddd; display: flex; gap: 8px; align-items: center; font-size: 13px; }
+.toolbar button { padding: 6px 12px; border: 1px solid #d9d9d9; border-radius: 4px; background: #fff; cursor: pointer; font-size: 12px; }
+.toolbar button:hover { border-color: #7c83ff; color: #7c83ff; }
+.toolbar .info { color: #666; margin-left: auto; }
+#graph { flex: 1; }
+.detail-panel { position: absolute; right: 16px; top: 60px; width: 280px; background: white; border: 1px solid #ddd; border-radius: 8px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-size: 12px; display: none; }
+.detail-panel h3 { font-size: 13px; margin-bottom: 8px; color: #1a1a2e; }
+.detail-panel .kv { display: flex; margin: 4px 0; }
+.detail-panel .kv .key { color: #999; width: 70px; flex-shrink: 0; }
+.detail-panel .kv .val { color: #333; word-break: break-all; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>程序血缘分析中心</h2>
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <a href="/" style="color:#7c83ff;font-size:12px;text-decoration:none;padding:4px 8px;background:#16213e;border-radius:4px">血缘图</a>
+    <a href="/fields.html" style="color:#fa8c16;font-size:12px;text-decoration:none;padding:4px 8px;background:#16213e;border-radius:4px">字段影响</a>
+    <a href="/api/v1/analysis/values" target="_blank" style="color:#52c41a;font-size:12px;text-decoration:none;padding:4px 8px;background:#16213e;border-radius:4px">价值标签</a>
+  </div>
+  <select id="appSelect" onchange="loadEntries()">
+    <option value="">选择应用...</option>
+  </select>
+  <input type="text" id="searchBox" placeholder="搜索方法..." oninput="filterEntries()">
+  <ul class="app-list" id="entryList"></ul>
+  <div style="margin-top:16px;font-size:11px;color:#666">
+    <a href="/api/v1/lineage/topology" target="_blank" style="color:#7c83ff">系统拓扑 (L3)</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="toolbar">
+    <button onclick="zoomIn()">放大</button>
+    <button onclick="zoomOut()">缩小</button>
+    <button onclick="fitView()">适应</button>
+    <span style="color:#666;font-size:11px">深度: <input type="number" id="depth" value="5" min="1" max="15" style="width:50px;padding:2px 4px" onchange="reloadLineage()"></span>
+    <select id="formatSelect" onchange="reloadLineage()" style="font-size:11px;padding:2px 4px">
+      <option value="g6">G6图</option>
+      <option value="tree">树形</option>
+      <option value="raw">原始</option>
+    </select>
+    <span class="info" id="graphInfo"></span>
+    <span id="loading" style="display:none;color:#7c83ff;margin-left:8px">⏳ 加载中...</span>
+  </div>
+  <div id="graph"></div>
+  <div class="detail-panel" id="detail"></div>
+</div>
+
+<script>
+let graph = null;
+let currentEntry = null;
+let allEntries = [];
+
+async function init() {
+  graph = new G6.Graph({
+    container: 'graph',
+    width: document.getElementById('graph').clientWidth,
+    height: document.getElementById('graph').clientHeight,
+    layout: { type: 'force', preventOverlap: true, nodeSpacing: 100 },
+    modes: { default: ['drag-canvas', 'zoom-canvas', 'drag-node'] },
+    animate: true,
+    defaultNode: { type: 'rect', size: [180, 40], style: { radius: 6, fill: '#f0f5ff', stroke: '#91d5ff', lineWidth: 1 }, labelCfg: { style: { fontSize: 11, fill: '#333' } } },
+    defaultEdge: { style: { stroke: '#999', lineWidth: 1, endArrow: true } }
+  });
+
+  graph.on('node:click', e => showDetail(e.item.getModel()));
+  window.addEventListener('resize', () => { if (graph) graph.changeSize(document.getElementById('graph').clientWidth, document.getElementById('graph').clientHeight); });
+
+  // Load apps: try known appIds from topology + fallback list
+  let apps = [];
+  try {
+    const tres = await fetch('/api/v1/lineage/topology');
+    const tdata = await tres.json();
+    if (tdata.success && tdata.data.graph.nodes) {
+      apps = tdata.data.graph.nodes.map(n => n.id);
+    }
+  } catch(e) {}
+  // Fallback: probe known apps
+  for (const probe of ['clawer', 'shenyu']) {
+    if (!apps.includes(probe)) {
+      try {
+        const r = await fetch('/api/v1/lineage/entry-points?appId=' + probe);
+        const d = await r.json();
+        if (d.success && d.data.entries?.length > 0) apps.push(probe);
+      } catch(e) {}
+    }
+  }
+  // Also check health for method count per app
+  try {
+    const hr = await fetch('/api/v1/health');
+    const hd = await hr.json();
+    if (hd.success) {
+      document.getElementById('graphInfo').textContent = hd.data.methods + ' methods loaded';
+    }
+  } catch(e) {}
+
+  const sel = document.getElementById('appSelect');
+  sel.innerHTML = '<option value="">选择应用...</option>';
+  apps.forEach(a => { const o = document.createElement('option'); o.value = a; o.textContent = a; sel.appendChild(o); });
+  if (apps.length > 0) { sel.value = apps[0]; loadEntries(); }
+  else { document.getElementById('entryList').innerHTML = '<li style="color:#f55">未找到应用 — 检查 Neo4j 连接</li>'; }
+}
+
+async function loadEntries() {
+  const appId = document.getElementById('appSelect').value;
+  if (!appId) return;
+  try {
+    const res = await fetch('/api/v1/lineage/entry-points?appId=' + appId);
+    const data = await res.json();
+    allEntries = data.data.entries || [];
+    renderEntryList(allEntries);
+  } catch(e) { console.error(e); }
+}
+
+function renderEntryList(entries) {
+  const list = document.getElementById('entryList');
+  list.innerHTML = entries.map((e, i) => `
+    <li onclick="selectEntry(${i})">
+      <span class="path">${e.httpMethod||'RPC'} ${e.httpPath||''}</span>
+      <div class="method">${e.className}.${e.signature}</div>
+    </li>
+  `).join('');
+  document.getElementById('graphInfo').textContent = entries.length + ' entries';
+}
+
+function filterEntries() {
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  const filtered = allEntries.filter(e => (e.signature||'').toLowerCase().includes(q) || (e.className||'').toLowerCase().includes(q));
+  renderEntryList(filtered);
+}
+
+async function selectEntry(idx) {
+  currentEntry = allEntries[idx];
+  await loadLineage(currentEntry.methodId);
+}
+
+async function loadLineage(methodId) {
+  const depth = document.getElementById('depth').value || 5;
+  const format = document.getElementById('formatSelect').value || 'g6';
+  const loading = document.getElementById('loading');
+  loading.style.display = 'inline';
+  try {
+    console.log('Loading lineage for:', methodId);
+    const res = await fetch('/api/v1/lineage/entry/' + encodeURIComponent(methodId) + '?depth=' + depth + '&format=' + format + '&view=method');
+    const data = await res.json();
+    console.log('API response:', data);
+    if (!data.success || !data.data) { console.error('API failed:', data); loading.style.display = 'none'; return; }
+
+    const g = data.data.graph;
+    const nodes = (g.nodes||[]).map(n => ({
+      id: n.id, label: (n.label||n.id).substring(0, 40),
+      style: {
+        fill: n.type === 'TABLE' ? '#f6ffed' : (n.style && n.style.fill) || '#f0f5ff',
+        stroke: (n.style && n.style.stroke) || '#91d5ff',
+        lineDash: n.data && n.data.unresolved ? [5,5] : undefined
+      }
+    }));
+    const edges = (g.edges||[]).map(e => ({
+      source: e.source, target: e.target,
+      label: e.type === 'ACCESSES' ? 'DB' : '',
+      style: { stroke: e.subType === 'EXTERNAL' ? '#fa8c16' : (e.style && e.style.stroke) || '#999', lineDash: e.subType === 'EXTERNAL' ? [8,4] : undefined }
+    }));
+
+    console.log('Setting graph data:', {nodes: nodes.length, edges: edges.length});
+    if (format === 'g6') {
+      graph.data({ nodes, edges });
+      graph.render();
+      graph.fitView(20);
+    } else {
+      // Tree/raw: show as text in graph area
+      graph.data({ nodes: [], edges: [] });
+      graph.render();
+    }
+    const dbTables = nodes.filter(n => n.style && n.style.fill === '#f6ffed').length;
+    document.getElementById('graphInfo').textContent =
+      `${nodes.length} nodes, ${edges.length} edges ` +
+      (dbTables > 0 ? `(${dbTables} DB tables) ` : '') +
+      `depth=${(g.meta && g.meta.depth)||'?'} (${(g.meta && g.meta.queryTimeMs)||0}ms)`;
+    loading.style.display = 'none';
+  } catch(e) { console.error('Lineage error:', e); loading.style.display = 'none'; }
+}
+
+function reloadLineage() { if (currentEntry) loadLineage(currentEntry.methodId); }
+
+function showDetail(model) {
+  const panel = document.getElementById('detail');
+  if (!model || !model.id) { panel.style.display = 'none'; return; }
+  panel.innerHTML = `<h3>${model.label||model.id}</h3>
+    <div class="kv"><span class="key">ID</span><span class="val">${model.id}</span></div>
+    <div class="kv"><span class="key">Type</span><span class="val">${model.type||'?'}</span></div>`;
+  panel.style.display = 'block';
+}
+
+function zoomIn() { graph.zoomTo(graph.getZoom() * 1.2); }
+function zoomOut() { graph.zoomTo(graph.getZoom() / 1.2); }
+function fitView() { if (graph) graph.fitView(20); }
+
+init();
+</script>
+</body>
+</html>
