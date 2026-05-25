@@ -37,3 +37,11 @@ out/
 .vscode/
 .superpowers/
 .claude/
+
+### Logs ###
+*.log
+
+### Environment ###
+.env
+.env.*
+docker-compose.override.yml
