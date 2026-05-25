@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 public class GovernanceAnalyzer implements GovernanceService {
 
     @Override
-    public GovernanceMetrics analyze(com.forfun.codel_ineage.fetcher.FetchedCode code) {
+    public GovernanceMetrics analyze(com.forfun.codel_ineage.analyzer.fetch.FetchedCode code) {
         Path baseDir = Paths.get(code.getBaseDir());
         List<Path> javaFiles = collectJavaFiles(baseDir);
 

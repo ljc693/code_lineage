@@ -1,6 +1,7 @@
 package com.forfun.codel_ineage.graph;
 
 import com.forfun.codel_ineage.model.*;
+import com.forfun.codel_ineage.model.graph.*;
 import com.forfun.codel_ineage.pathfinder.TraversalSpec;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;

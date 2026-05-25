@@ -1,6 +1,6 @@
 package com.forfun.codel_ineage.analyzer.governance;
 
-import com.forfun.codel_ineage.fetcher.FetchedCode;
+import com.forfun.codel_ineage.analyzer.fetch.FetchedCode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import static org.assertj.core.api.Assertions.assertThat;

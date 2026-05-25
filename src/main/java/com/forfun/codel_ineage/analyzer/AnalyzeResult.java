@@ -1,7 +1,7 @@
 package com.forfun.codel_ineage.analyzer;
 
-import com.forfun.codel_ineage.model.MethodNode;
-import com.forfun.codel_ineage.model.RawRelation;
+import com.forfun.codel_ineage.model.graph.MethodNode;
+import com.forfun.codel_ineage.model.graph.RawRelation;
 import lombok.Builder;
 import lombok.Data;
 import java.util.List;

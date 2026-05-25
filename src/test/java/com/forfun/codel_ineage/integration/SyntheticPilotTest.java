@@ -3,10 +3,10 @@ package com.forfun.codel_ineage.integration;
 import com.forfun.codel_ineage.analyzer.AnalyzeResult;
 import com.forfun.codel_ineage.analyzer.AnalyzeTask;
 import com.forfun.codel_ineage.analyzer.JavaCodeAnalyzer;
-import com.forfun.codel_ineage.fetcher.FetchedCode;
+import com.forfun.codel_ineage.analyzer.fetch.FetchedCode;
 import com.forfun.codel_ineage.model.CallType;
-import com.forfun.codel_ineage.model.MethodNode;
-import com.forfun.codel_ineage.model.RawRelation;
+import com.forfun.codel_ineage.model.graph.MethodNode;
+import com.forfun.codel_ineage.model.graph.RawRelation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 

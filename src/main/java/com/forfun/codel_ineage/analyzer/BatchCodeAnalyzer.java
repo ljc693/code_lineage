@@ -3,8 +3,8 @@ package com.forfun.codel_ineage.analyzer;
 import com.forfun.codel_ineage.analyzer.asm.AsmMethodVisitor;
 import com.forfun.codel_ineage.analyzer.ast.AstMethodVisitor;
 import com.forfun.codel_ineage.analyzer.detector.CompositeEntryPointDetector;
-import com.forfun.codel_ineage.model.MethodNode;
-import com.forfun.codel_ineage.model.RawRelation;
+import com.forfun.codel_ineage.model.graph.MethodNode;
+import com.forfun.codel_ineage.model.graph.RawRelation;
 import com.github.javaparser.StaticJavaParser;
 import org.springframework.stereotype.Component;
 

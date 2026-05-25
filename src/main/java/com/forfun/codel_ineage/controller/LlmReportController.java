@@ -2,11 +2,11 @@ package com.forfun.codel_ineage.controller;
 
 import com.forfun.codel_ineage.analysis.rule.AnalysisFindingsRepository;
 import com.forfun.codel_ineage.controller.dto.LineageResponse;
-import com.forfun.codel_ineage.llm.AnalysisExporter;
-import com.forfun.codel_ineage.llm.LineageContext;
-import com.forfun.codel_ineage.llm.LineageContextBuilder;
-import com.forfun.codel_ineage.llm.LlmReportRepository;
-import com.forfun.codel_ineage.llm.PromptTemplate;
+import com.forfun.codel_ineage.analysis.report.AnalysisExporter;
+import com.forfun.codel_ineage.analysis.report.LineageContext;
+import com.forfun.codel_ineage.analysis.report.LineageContextBuilder;
+import com.forfun.codel_ineage.analysis.report.LlmReportRepository;
+import com.forfun.codel_ineage.analysis.report.PromptTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;

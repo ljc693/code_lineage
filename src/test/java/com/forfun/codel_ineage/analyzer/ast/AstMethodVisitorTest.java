@@ -1,7 +1,7 @@
 package com.forfun.codel_ineage.analyzer.ast;
 
-import com.forfun.codel_ineage.model.MethodNode;
-import com.forfun.codel_ineage.model.RawRelation;
+import com.forfun.codel_ineage.model.graph.MethodNode;
+import com.forfun.codel_ineage.model.graph.RawRelation;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import org.junit.jupiter.api.Test;

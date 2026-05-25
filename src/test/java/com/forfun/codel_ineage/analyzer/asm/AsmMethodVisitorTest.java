@@ -1,7 +1,7 @@
 package com.forfun.codel_ineage.analyzer.asm;
 
-import com.forfun.codel_ineage.model.MethodNode;
-import com.forfun.codel_ineage.model.RawRelation;
+import com.forfun.codel_ineage.model.graph.MethodNode;
+import com.forfun.codel_ineage.model.graph.RawRelation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,8 +1,8 @@
 package com.forfun.codel_ineage.pathfinder;
 
 import com.forfun.codel_ineage.graph.Neo4jMethodRepository;
-import com.forfun.codel_ineage.model.CallsEdge;
-import com.forfun.codel_ineage.model.MethodNode;
+import com.forfun.codel_ineage.model.graph.CallsEdge;
+import com.forfun.codel_ineage.model.graph.MethodNode;
 import org.springframework.stereotype.Component;
 
 import java.util.*;

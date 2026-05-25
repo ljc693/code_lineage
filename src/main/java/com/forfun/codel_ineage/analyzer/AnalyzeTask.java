@@ -1,6 +1,6 @@
 package com.forfun.codel_ineage.analyzer;
 
-import com.forfun.codel_ineage.fetcher.FetchedCode;
+import com.forfun.codel_ineage.analyzer.fetch.FetchedCode;
 import lombok.Builder;
 import lombok.Data;
 

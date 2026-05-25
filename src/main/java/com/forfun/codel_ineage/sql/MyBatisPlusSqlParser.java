@@ -1,6 +1,6 @@
 package com.forfun.codel_ineage.sql;
 
-import com.forfun.codel_ineage.model.MethodNode;
+import com.forfun.codel_ineage.model.graph.MethodNode;
 import com.forfun.codel_ineage.model.SqlOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

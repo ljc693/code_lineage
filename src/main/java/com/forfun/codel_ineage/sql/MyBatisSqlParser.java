@@ -1,6 +1,6 @@
 package com.forfun.codel_ineage.sql;
 
-import com.forfun.codel_ineage.model.MethodNode;
+import com.forfun.codel_ineage.model.graph.MethodNode;
 import com.forfun.codel_ineage.model.SqlOperation;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.*;

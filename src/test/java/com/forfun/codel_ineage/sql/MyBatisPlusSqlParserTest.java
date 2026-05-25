@@ -1,8 +1,8 @@
 package com.forfun.codel_ineage.sql;
 
 import com.forfun.codel_ineage.model.CallType;
-import com.forfun.codel_ineage.model.MethodNode;
-import com.forfun.codel_ineage.model.RawRelation;
+import com.forfun.codel_ineage.model.graph.MethodNode;
+import com.forfun.codel_ineage.model.graph.RawRelation;
 import com.forfun.codel_ineage.model.SqlOperation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

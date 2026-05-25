@@ -1,8 +1,8 @@
 package com.forfun.codel_ineage.analyzer.asm;
 
 import com.forfun.codel_ineage.model.CallType;
-import com.forfun.codel_ineage.model.MethodNode;
-import com.forfun.codel_ineage.model.RawRelation;
+import com.forfun.codel_ineage.model.graph.MethodNode;
+import com.forfun.codel_ineage.model.graph.RawRelation;
 import org.objectweb.asm.*;
 import java.io.IOException;
 import java.io.InputStream;

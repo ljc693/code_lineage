@@ -1,6 +1,7 @@
 package com.forfun.codel_ineage.graph;
 
 import com.forfun.codel_ineage.model.*;
+import com.forfun.codel_ineage.model.graph.*;
 import com.forfun.codel_ineage.pathfinder.TraversalSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -3,7 +3,7 @@ package com.forfun.codel_ineage.controller;
 import com.forfun.codel_ineage.analyzer.governance.GovernanceAnalyzer;
 import com.forfun.codel_ineage.analyzer.governance.GovernanceMetrics;
 import com.forfun.codel_ineage.controller.dto.LineageResponse;
-import com.forfun.codel_ineage.fetcher.FetchedCode;
+import com.forfun.codel_ineage.analyzer.fetch.FetchedCode;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;

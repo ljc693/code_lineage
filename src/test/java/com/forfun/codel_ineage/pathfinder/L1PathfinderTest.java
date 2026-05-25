@@ -3,6 +3,7 @@ package com.forfun.codel_ineage.pathfinder;
 import com.forfun.codel_ineage.graph.GraphAdapter;
 import com.forfun.codel_ineage.graph.GraphAdapter.TraversalResult;
 import com.forfun.codel_ineage.model.*;
+import com.forfun.codel_ineage.model.graph.*;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;

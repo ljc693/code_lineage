@@ -1,6 +1,7 @@
 package com.forfun.codel_ineage.graph;
 
 import com.forfun.codel_ineage.model.*;
+import com.forfun.codel_ineage.model.graph.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
